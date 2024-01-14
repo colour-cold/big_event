@@ -4,6 +4,8 @@ import me.colourcold.mapper.UserMapper;
 import me.colourcold.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Map;
+
 public interface UserService {
 
     User findByUsername(String username);
@@ -13,4 +15,6 @@ public interface UserService {
     void update(User user);
 
     void avatarUrl(String url);
+
+    void updatePwd(Map<String, String> userMap);
 }

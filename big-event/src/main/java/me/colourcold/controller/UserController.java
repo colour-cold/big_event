@@ -74,4 +74,28 @@ public class UserController {
         userService.avatarUrl(url);
         return Result.success();
     }
+
+    @PatchMapping("/updatePwd")
+    public Result updatePwd(@RequestBody Map<String, String> userMap) {
+        String oldPwd = userMap.get("old_pwd");
+        String newPwd = userMap.get("new_pwd");
+        String rePwd = userMap.get("re_pwd");
+        if (!StringUtils.isNotEmpty(oldPwd) || !StringUtils.isNotEmpty(newPwd) || !StringUtils.isNotEmpty(rePwd)) {
+            return Result.error("缺少必要参数");
+        }
+        if (!newPwd.equals(rePwd)) {
+            return Result.error("两次密码输入不一致");
+        }
+        Map<String,Object> map = ThreadLocalUtil.get();
+        String username = (String) map.get("username");
+        User user = userService.findByUsername(username);
+        if (!Md5Util.checkPassword(oldPwd,user.getPassword())) {
+            return Result.error("当前密码错误");
+        }
+        if (Md5Util.getMD5String(newPwd).equals(user.getPassword())) {
+            return Result.error("新密码不能与当前密码一致");
+        }
+        userService.updatePwd(userMap);
+        return Result.success();
+    }
 }

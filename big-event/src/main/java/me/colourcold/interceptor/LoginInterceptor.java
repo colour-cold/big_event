@@ -1,5 +1,6 @@
 package me.colourcold.interceptor;
 
+import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import me.colourcold.pojo.Result;

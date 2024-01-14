@@ -20,4 +20,9 @@ public interface UserMapper {
 
     @Update("update user set user_pic=#{url},update_time=now() where id =#{id}")
     void avatraUrl(String url, Integer id);
+
+    @Update("update user set password=#{newPwd},update_time=now() where id=#{id}")
+    void updatePwd(String newPwd, Integer id);
+
+
 }

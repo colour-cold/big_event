@@ -1,0 +1,23 @@
+package me.colourcold.mapper;
+
+import me.colourcold.pojo.Category;
+import org.apache.ibatis.annotations.*;
+
+
+import java.util.List;
+
+@Mapper
+public interface CategoryMapper {
+    //新增
+    @Insert("insert into category(category_name,category_alias,create_user,create_time,update_time) " +
+            "values(#{categoryName},#{categoryAlias},#{createUser},#{createTime},#{updateTime})")
+    void add(Category category);
+
+
+    @Select("select * from category where create_user=#{id}")
+    List<Category> list(Integer id);
+
+    //根据id查询
+    @Select("select * from category where id = #{id}")
+    Category findById(Integer id);
+}
