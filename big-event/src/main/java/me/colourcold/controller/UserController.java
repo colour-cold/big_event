@@ -9,13 +9,14 @@ import me.colourcold.pojo.User;
 import me.colourcold.service.UserService;
 import me.colourcold.utils.JwtUtil;
 import me.colourcold.utils.Md5Util;
+import me.colourcold.utils.ThreadLocalUtil;
+import org.hibernate.validator.constraints.URL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @Validated
 @RestController
@@ -50,5 +51,27 @@ public class UserController {
         } else {
             return Result.error("密码错误");
         }
+    }
+
+    @GetMapping("/userInfo")
+    public Result userInfo(/*@RequestHeader(name = "Authorization") String token*/) {
+//        Map<String, Object> userMap = JwtUtil.parseToken(token);
+//        User user = userService.findByUsername((String) userMap.get("username"));
+        Map<String, Object> userMap = ThreadLocalUtil.get();
+        User user = userService.findByUsername((String) userMap.get("username"));
+        return Result.success(user);
+
+    }
+
+    @PutMapping("/update")
+    public Result update(@RequestBody User user) {
+        userService.update(user);
+        return Result.success();
+    }
+
+    @PatchMapping("/updateAvatar")
+    public Result updatePic(@RequestParam @URL String url) {
+        userService.avatarUrl(url);
+        return Result.success();
     }
 }

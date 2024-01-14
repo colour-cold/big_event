@@ -4,3 +4,7 @@ spring:
     url: jdbc:mysql://localhost:3306/big_event
     username: root
     password: 123456
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true #开启驼峰命名和下划线命名的相互转换  开启后当数据库字段与用户对象字段命名不统一时可不受影响
