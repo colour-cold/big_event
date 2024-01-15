@@ -1,5 +1,6 @@
 package me.colourcold.controller;
 
+import io.micrometer.common.util.StringUtils;
 import me.colourcold.pojo.Category;
 import me.colourcold.pojo.Result;
 import me.colourcold.service.CategoryService;
@@ -27,9 +28,26 @@ public class CategoryController {
     }
 
     @GetMapping("/detail")
-    public Result<Category> detail(Integer id){
+    public Result<Category> detail(Integer id) {
         Category c = categoryService.findById(id);
         return Result.success(c);
+    }
+
+    @PutMapping
+    public Result update(@RequestBody @Validated Category category) {
+        categoryService.update(category);
+        return Result.success();
+    }
+
+    @DeleteMapping
+    public Result delete(Integer id) {
+        if (categoryService.findById(id) != null) {
+            categoryService.delete(id);
+            return Result.success();
+        } else {
+            return Result.error("id不存在");
+        }
+
     }
 
 }
