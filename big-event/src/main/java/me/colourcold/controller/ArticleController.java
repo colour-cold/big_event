@@ -2,28 +2,32 @@ package me.colourcold.controller;
 
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletResponse;
+import me.colourcold.pojo.Article;
+import me.colourcold.pojo.PageBean;
 import me.colourcold.pojo.Result;
+import me.colourcold.service.ArticleService;
 import me.colourcold.utils.JwtUtil;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
 @RequestMapping("/article")
 public class ArticleController {
-    @GetMapping("/list")
-    public Result lists(/*@RequestHeader(name = "Authorization") String token, HttpServletResponse response*/) {
-//        try {
-//            Map<String, Object> claims = JwtUtil.parseToken(token);
-//            return Result.success("文章列表");
-//        }catch (Exception e) {
-//            response.setStatus(401);
-//            return Result.error("未登录");
-//        }
-        return Result.success("文章列表");
+    @Autowired
+    private ArticleService articleService;
 
+    @PostMapping
+    public Result add(@RequestBody @Validated Article article) {
+        articleService.add(article);
+        return Result.success("文章列表");
+    }
+
+    @GetMapping
+    public Result<PageBean<Article>> get(Integer pageNum, Integer pageSize, @RequestParam(required = false) Integer categoryId, @RequestParam(required = false) String state) {
+        PageBean<Article> list = articleService.get(pageNum, pageSize, categoryId, state);
+        return Result.success(list);
     }
 }
