@@ -12,18 +12,24 @@ import me.colourcold.utils.Md5Util;
 import me.colourcold.utils.ThreadLocalUtil;
 import org.hibernate.validator.constraints.URL;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Validated
 @RestController
 @RequestMapping("/user")
 public class UserController {
     @Autowired
-    UserService userService;
+    private UserService userService;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @PostMapping("/register")
     public Result register(@Pattern(regexp = "^\\S{5,16}$") String username, @Pattern(regexp = "^\\S{5,16}$") String password) {
@@ -47,6 +53,8 @@ public class UserController {
             claims.put("id", loginUser.getId());
             claims.put("username", loginUser.getUsername());
             String token = JwtUtil.genToken(claims);
+            ValueOperations<String, String> op = stringRedisTemplate.opsForValue();
+            op.set("token", token, 12, TimeUnit.HOURS);
             return Result.success(token);
         } else {
             return Result.error("密码错误");
@@ -86,16 +94,23 @@ public class UserController {
         if (!newPwd.equals(rePwd)) {
             return Result.error("两次密码输入不一致");
         }
-        Map<String,Object> map = ThreadLocalUtil.get();
+        Map<String, Object> map = ThreadLocalUtil.get();
         String username = (String) map.get("username");
         User user = userService.findByUsername(username);
-        if (!Md5Util.checkPassword(oldPwd,user.getPassword())) {
+        if (!Md5Util.checkPassword(oldPwd, user.getPassword())) {
             return Result.error("当前密码错误");
         }
         if (Md5Util.getMD5String(newPwd).equals(user.getPassword())) {
             return Result.error("新密码不能与当前密码一致");
         }
         userService.updatePwd(userMap);
-        return Result.success();
+        HashMap<String, Object> claims = new HashMap<>();
+        claims.put("id", user.getId());
+        claims.put("username", username);
+        String token = JwtUtil.genToken(claims);
+        ValueOperations<String, String> op = stringRedisTemplate.opsForValue();
+        op.getAndDelete("token");
+        op.set("token", token, 12, TimeUnit.HOURS);
+        return Result.success(token);
     }
 }
