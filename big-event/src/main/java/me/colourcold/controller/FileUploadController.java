@@ -25,13 +25,13 @@ public class FileUploadController {
 //    }
 
     @PostMapping
-    public Result upload(MultipartFile file) throws Exception {
+    public Result upload(MultipartFile file, String key, String secret) throws Exception {
         String originalFilename = file.getOriginalFilename();
         UUID uuid = UUID.randomUUID();
         String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
         String objectName = uuid + suffix;
         InputStream inputStream = file.getInputStream();
-        String url = AliOssUtil.upload(objectName, inputStream);
+        String url = AliOssUtil.upload(objectName, inputStream, key, secret);
         return Result.success(url);
     }
 }

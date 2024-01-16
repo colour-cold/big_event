@@ -17,11 +17,9 @@ public class AliOssUtil {
     private static final String BUCKETNAME = "colour-cold";
 
     //AccessKey
-    private static final String ACCESS_KET_ID = "LTAI5t9rBq7nLC6wA1gdRfwd";
     //AccessSecret
-    private static final String ACCESS_KEY_SECRET = "p86G3QmTFQs6ZvHifpsKMzj0qe9Xga";
 
-    public static String upload(String objectName, InputStream inputStream) throws Exception {
+    public static String upload(String objectName, InputStream inputStream, String key, String secret) throws Exception {
         String url = "";
 
         // 从环境变量中获取访问凭证。运行本代码示例之前，请确保已设置环境变量OSS_ACCESS_KEY_ID和OSS_ACCESS_KEY_SECRET。
@@ -33,7 +31,7 @@ public class AliOssUtil {
 
         // 创建OSSClient实例。
 //        OSS ossClient = new OSSClientBuilder().build(endpoint, credentialsProvider);
-        OSS ossClient = new OSSClientBuilder().build(ENDPOINT, ACCESS_KET_ID, ACCESS_KEY_SECRET);
+        OSS ossClient = new OSSClientBuilder().build(ENDPOINT, key, secret);
 
         try {
             // 填写字符串。
